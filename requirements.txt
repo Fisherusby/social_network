@@ -1,5 +1,6 @@
 alembic==1.9.2
 anyio==3.6.2
+asyncpg==0.27.0
 fastapi==0.89.1
 greenlet==2.0.1
 idna==3.4

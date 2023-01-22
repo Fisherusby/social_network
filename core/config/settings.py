@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     API_PREFIX: str = "/api"
     VERSION: str = '0.0.1'
 
+    SQLALCHEMY_DATABASE_URI: str
+
     class Config:
         case_sensitive = True
 
