@@ -17,7 +17,7 @@ services:
     volumes:
       - .:/app
     environment:
-      - MODULE_NAME=main
+      - MODULE_NAME=core.main
     depends_on:
       - postgres
     ports:
