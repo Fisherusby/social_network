@@ -4,13 +4,14 @@ from pydantic import BaseModel, EmailStr, validator
 
 
 def validate_password(v: Optional[str]) -> Optional[str]:
-    if v:
-        pattern = r"^[A-Za-z\d!#$%&*+\-.<=>?@^_;\]\[~`;\(\)]{8,32}$"
-        if not bool(re.match(pattern, v)):
-            raise ValueError(
-                "Password must contain between 8 and 32 symbols (numbers and/or letters and/or special characters)"
-            )
-        return v
+
+    pattern = r"^[A-Za-z\d!#$%&*+\-.<=>?@^_;\]\[~`;\(\)]{8,32}$"
+    if not bool(re.match(pattern, v)) or len(v) > 0:
+        raise ValueError(
+            "Password must contain between 8 and 32 symbols (numbers and/or letters and/or special characters)"
+        )
+
+    return v
 
 
 class Email(BaseModel):
