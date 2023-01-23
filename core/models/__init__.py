@@ -1,1 +1,3 @@
-from core.models.user import BaseUserRegistrationRequest
+from .post import Post
+from .user import User
+

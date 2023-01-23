@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from core import models
+from core import schemas
 from core.api.depends import get_session
 from core import services
 
@@ -14,7 +14,7 @@ router: APIRouter = APIRouter()
 async def user_registration(
         *,
         db: AsyncSession = Depends(get_session),
-        data: models.BaseUserRegistrationRequest,
+        data: schemas.BaseUserRegistrationRequest,
 ) -> dict:
     print(data.json())
     return {'message': "successful"}

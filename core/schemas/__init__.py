@@ -1,3 +1,1 @@
-from .post import Post
-from .user import User
-
+from core.schemas.user import BaseUserRegistrationRequest
