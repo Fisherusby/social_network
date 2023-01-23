@@ -3,6 +3,9 @@ from core import repositories
 from core.services.base import BaseObjectService
 
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
+
 class PostService(BaseObjectService):
     pass
 

@@ -20,7 +20,6 @@ class Email(BaseModel):
 class BaseUser(Email):
     """Base User fields for registration."""
 
-    name: str
     username: str
 
 

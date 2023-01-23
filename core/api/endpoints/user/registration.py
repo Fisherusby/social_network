@@ -16,5 +16,7 @@ async def user_registration(
         db: AsyncSession = Depends(get_session),
         data: schemas.BaseUserRegistrationRequest,
 ) -> dict:
-    print(data.json())
+    """Registration new users"""
+
+    await services.user_service.registration(db=db, data=data)
     return {'message': "successful"}
