@@ -11,36 +11,41 @@ from core.config.security import verify_password
 class UserService(BaseObjectService):
 
     async def registration(self, db: AsyncSession, data):
+        """User registration flow."""
         is_exist = await self.repository.get_by_email(db=db, email=data.email)
         if is_exist is not None:
             raise HTTPException(
                 status_code=400, detail=f"User already exist")
 
-        self._check_email_by_emailhunter(email=data.email)
+        if settings.EMAIL_VERIFY:
+            self._check_email_by_emailhunter(email=data.email)
 
         await self.repository.create(db=db, obj_in=data)
 
     @staticmethod
     def _check_email_by_emailhunter(email: str):
+        """Use emailhunter.co for verifying email existence on registration."""
+
         url = settings.EMAIL_VERIFY_API_URL.format(email, settings.EMAIL_VERIFY_API_KEY)
         try:
             resp = requests.get(url)
-            if resp.status_code == 200:
-                resp_data = resp.json().get('data')
-                if resp_data['status'] not in settings.EMAIL_VERIFY_VALID_STATUS:
-                    raise HTTPException(
-                        status_code=422, detail=f"Your email has bad status <{resp_data['status']}> by emailhunter.co")
-                if resp_data['result'] not in settings.EMAIL_VERIFY_VALID_RESULT:
-                    raise HTTPException(
-                        status_code=422, detail=f"Your email has bad result <{resp_data['result']}> by emailhunter.co")
         except Exception as e:
             print(e)
-        return
+            raise HTTPException(
+                status_code=422, detail=f"Service emailhunter.co service is not available. Please try later.")
 
-    async def delete(self, db, id):
-        return await self.repository.delete_by_id(db=db, id=id)
+        if resp.status_code == 200:
+            resp_data = resp.json().get('data')
+            rest_status, rest_result = resp_data.get('status'), resp_data.get('result')
+            if rest_status not in settings.EMAIL_VERIFY_VALID_STATUS:
+                raise HTTPException(
+                    status_code=422, detail=f"Your email has <{rest_status}> status by emailhunter.co")
+            if rest_result not in settings.EMAIL_VERIFY_VALID_RESULT:
+                raise HTTPException(
+                    status_code=422, detail=f"Your email has <{rest_result}> result by emailhunter.co")
 
     async def get_user_for_auth(self, db: AsyncSession, id: int):
+        """Get user by id and raise if user isn`t exist"""
         if id is None:
             raise HTTPException(status_code=404, detail=f"User not found")
 
@@ -51,6 +56,7 @@ class UserService(BaseObjectService):
             return user
 
     async def authenticate(self, db: AsyncSession, email: str, password: str):
+        """User authenticate flow"""
         user: models.User = await self.repository.get_by_field(db=db, field_name='email', value=email, only_one=True)
         if user is None:
             raise HTTPException(status_code=404, detail=f"User not found")
@@ -64,7 +70,6 @@ class UserService(BaseObjectService):
                 "access_token": services.jwt_service.encode(data=token_data, token_type='access_token'),
                 "refresh_token": services.jwt_service.encode(data=token_data, token_type='refresh_token'),
             }
-            print(f'{response=}')
             return schemas.OAuth2TokensResponse(**response)
 
         raise HTTPException(

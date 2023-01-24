@@ -1,9 +1,10 @@
 from core import services, schemas, models
 from core.api import depends
+from core.config import contstants
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
+from typing import List, Any
 
 
 router = APIRouter()
@@ -25,7 +26,7 @@ async def create_post(
     db: AsyncSession = Depends(depends.get_session),
     current_user: models.User = Depends(depends.get_current_user),
 ):
-    """Endpoint to create post"""
+    """Endpoint to create a post"""
     created_post: models.Post = await services.post_service.create_post(db=db, data=data, user=current_user)
     return created_post
 
@@ -35,7 +36,7 @@ async def view_post(
     post_id: int,
     db: AsyncSession = Depends(depends.get_session),
 ):
-    """Endpoint to view post"""
+    """Endpoint to view a post"""
     post: models.Post = await services.post_service.get_post(db=db, post_id=post_id)
 
     return post
@@ -48,7 +49,7 @@ async def update_post(
     db: AsyncSession = Depends(depends.get_session),
     current_user: models.User = Depends(depends.get_current_user),
 ):
-    """Endpoint to edit post"""
+    """Endpoint to edit a post"""
     post = await services.post_service.update_post(db=db, post_id=post_id, data=data, current_user=current_user)
     return post
 
@@ -59,26 +60,34 @@ async def delete_post(
     db: AsyncSession = Depends(depends.get_session),
     current_user: models.User = Depends(depends.get_current_user),
 ):
-    """Endpoint to delete post"""
+    """Endpoint to delete a post"""
     await services.post_service.delete_post(db=db, post_id=post_id, current_user=current_user)
     return {"message": "Successfully deleted"}
 
 
-@router.patch('/post/{post_id}/like', status_code=204, )
-async def delete_post(
+@router.patch('/post/{post_id}/like', status_code=200, )
+async def like_post(
     post_id: int,
     db: AsyncSession = Depends(depends.get_session),
     current_user: models.User = Depends(depends.get_current_user),
-) -> None:
-    """Endpoint to delete post"""
+) -> Any:
+    """Endpoint to like a post"""
+
+    return await services.post_service.like_post(
+        db=db, post_id=post_id, current_user=current_user, like=contstants.post_like
+    )
 
 
-@router.patch('/post/{post_id}/dislike', status_code=204, )
-async def delete_post(
+@router.patch('/post/{post_id}/dislike', status_code=200, )
+async def dislike_post(
     post_id: int,
     db: AsyncSession = Depends(depends.get_session),
     current_user: models.User = Depends(depends.get_current_user),
-) -> None:
-    """Endpoint to delete post"""
+) -> Any:
+    """Endpoint to dislike a post"""
+
+    return await services.post_service.like_post(
+        db=db, post_id=post_id, current_user=current_user, like=contstants.post_dislike
+    )
 
 

@@ -1,3 +1,3 @@
-from .post import Post
-from .user import User
+from core.models.post import Post, LikeDislikePost
+from core.models.user import User
 

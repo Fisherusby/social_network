@@ -20,18 +20,3 @@ async def user_registration(
 
     await services.user_service.registration(db=db, data=data)
     return {'message': "successful"}
-
-#
-# @router.get(
-#     "/delete",
-#     status_code=201,
-# )
-# async def user_registration(
-#         *,
-#         db: AsyncSession = Depends(get_session),
-#         id: int,
-# ) -> dict:
-#     """Registration new users"""
-#
-#     await services.user_service.delete(db=db, id=id)
-#     return {'message': "successful"}

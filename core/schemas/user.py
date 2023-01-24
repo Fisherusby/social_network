@@ -1,7 +1,6 @@
 import re
 from typing import Optional
 from pydantic import BaseModel, EmailStr, validator
-from core import schemas
 from core.schemas.base import BaseAPIModel
 
 

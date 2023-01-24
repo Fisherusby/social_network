@@ -15,7 +15,7 @@ async def login(
     db: AsyncSession = Depends(depends.get_session),
     form_data: OAuth2PasswordRequestForm = Depends(),
 ) -> Any:
-    """Endpoint to sing in"""
+    """Endpoint to user sing in"""
     auth_data = await services.user_service.authenticate(db=db, email=form_data.username, password=form_data.password)
 
     return auth_data

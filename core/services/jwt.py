@@ -9,6 +9,7 @@ class JWT:
         self.algorithm = algorithm
 
     def encode(self, data: dict, token_type: str):
+        """Encode JWT token"""
         to_encode = data.copy()
 
         token_duration = settings.ACCESS_TOKEN_DURATION.get(token_type, None)
@@ -23,6 +24,7 @@ class JWT:
         return encoded_jwt
 
     def decode(self, token):
+        """Decode JWT token"""
         try:
             data = jwt.decode(token, settings.SECRET_KEY, algorithms=[self.algorithm])
         except JWTError:

@@ -18,6 +18,7 @@ class Settings(BaseSettings):
         "refresh_token": REFRESH_TOKEN_DURATION_DAYS,
     }
 
+    EMAIL_VERIFY: bool = False
     EMAIL_VERIFY_API_URL: str = 'https://api.hunter.io/v2/email-verifier?email={}&api_key={}'
     EMAIL_VERIFY_API_KEY: str
     EMAIL_VERIFY_VALID_RESULT: list = ['deliverable']

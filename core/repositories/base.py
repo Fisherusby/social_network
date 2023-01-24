@@ -29,6 +29,7 @@ class BaseRepository:
         return (await db.execute(select(self.model).offset(skip).limit(limit))).scalars().all()
 
     async def get_by_id(self, db: AsyncSession, *, id: int) -> Optional[ModelType]:
+        """Select an object in database by ID."""
         query = select(self.model).filter(self.model.id == id)
         res = (await db.execute(query)).scalar_one_or_none()
         return res
@@ -37,6 +38,10 @@ class BaseRepository:
             self, db: AsyncSession, *, field_name: str, value: str, only_one: bool = False,
             skip: int = 0, limit: int = 100
     ):
+        """Select objects in database by field value.
+
+        only_one set True if you want an objects or None as result.
+        """
         query = select(self.model).filter(getattr(self.model, field_name, None) == value)
         if only_one:
             return (await db.execute(query)).scalar_one_or_none()
@@ -44,6 +49,7 @@ class BaseRepository:
             return (await db.execute(query.offset(skip).limit(limit))).scalars().all()
 
     async def create(self, db: AsyncSession, *, obj_in: Union[CreateSchemaType, dict]):
+        """Create an object in database."""
         obj_in: dict = dict(obj_in)
         db_obj = self.model(**obj_in)
         db.add(db_obj)
@@ -54,6 +60,7 @@ class BaseRepository:
         return db_obj
 
     async def delete_by_id(self, db: AsyncSession, *, id: int):
+        """Delete an object in database by ID."""
         obj = await self.get_by_id(db=db, id=id)
 
         query = delete(self.model).where(self.model.id == id)
@@ -69,6 +76,12 @@ class BaseRepository:
         db_obj: ModelType,
         obj_in: Union[UpdateSchemaType, Dict[str, Any]],
     ) -> ModelType:
+        """Update an object in database.
+
+        :param db_obj: Modifiable object
+        :param obj_in: Updated data
+        :return:
+        """
         obj_data = dict(db_obj.__dict__)
         obj_data.pop('_sa_instance_state')
 
