@@ -1,23 +1,41 @@
+import requests
 from core import repositories, models, services, schemas
 from core.config import settings
 from core.services.base import BaseObjectService
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.exceptions import HTTPException
 from fastapi import status
-from core.config import security
-from core.config.security import verify_password, get_password_hash
+from core.config.security import verify_password
 
 
 class UserService(BaseObjectService):
 
     async def registration(self, db: AsyncSession, data):
         is_exist = await self.repository.get_by_email(db=db, email=data.email)
-        print(is_exist)
         if is_exist is not None:
             raise HTTPException(
                 status_code=400, detail=f"User already exist")
 
+        self._check_email_by_emailhunter(email=data.email)
+
         await self.repository.create(db=db, obj_in=data)
+
+    @staticmethod
+    def _check_email_by_emailhunter(email: str):
+        url = settings.EMAIL_VERIFY_API_URL.format(email, settings.EMAIL_VERIFY_API_KEY)
+        try:
+            resp = requests.get(url)
+            if resp.status_code == 200:
+                resp_data = resp.json().get('data')
+                if resp_data['status'] not in settings.EMAIL_VERIFY_VALID_STATUS:
+                    raise HTTPException(
+                        status_code=422, detail=f"Your email has bad status <{resp_data['status']}> by emailhunter.co")
+                if resp_data['result'] not in settings.EMAIL_VERIFY_VALID_RESULT:
+                    raise HTTPException(
+                        status_code=422, detail=f"Your email has bad result <{resp_data['result']}> by emailhunter.co")
+        except Exception as e:
+            print(e)
+        return
 
     async def delete(self, db, id):
         return await self.repository.delete_by_id(db=db, id=id)

@@ -18,6 +18,11 @@ class Settings(BaseSettings):
         "refresh_token": REFRESH_TOKEN_DURATION_DAYS,
     }
 
+    EMAIL_VERIFY_API_URL: str = 'https://api.hunter.io/v2/email-verifier?email={}&api_key={}'
+    EMAIL_VERIFY_API_KEY: str
+    EMAIL_VERIFY_VALID_RESULT: list = ['deliverable']
+    EMAIL_VERIFY_VALID_STATUS: list = ['valid', 'webmail', 'accept_all']
+
     SQLALCHEMY_DATABASE_URI: str
 
     class Config:
