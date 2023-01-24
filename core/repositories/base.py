@@ -4,10 +4,12 @@ from pydantic import BaseModel
 from core.models.base import Base
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import delete
 
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
+UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
 class BaseRepository:
@@ -26,9 +28,10 @@ class BaseRepository:
 
         return (await db.execute(select(self.model).offset(skip).limit(limit))).scalars().all()
 
-    async def gat_by_id(self, db: AsyncSession, *, id: int) -> Optional[ModelType]:
+    async def get_by_id(self, db: AsyncSession, *, id: int) -> Optional[ModelType]:
         query = select(self.model).filter(self.model.id == id)
-        return (await db.execute(query)).scalar_one_or_none()
+        res = (await db.execute(query)).scalar_one_or_none()
+        return res
 
     async def get_by_field(
             self, db: AsyncSession, *, field_name: str, value: str, only_one: bool = False,
@@ -50,10 +53,39 @@ class BaseRepository:
 
         return db_obj
 
-    async def delete_by_id(self):
-        pass
+    async def delete_by_id(self, db: AsyncSession, *, id: int):
+        obj = await self.get_by_id(db=db, id=id)
 
-    async def update(self):
-        pass
+        query = delete(self.model).where(self.model.id == id)
+
+        await db.execute(query)
+        await db.commit()
+        return obj
+
+    async def update(
+        self,
+        db: AsyncSession,
+        *,
+        db_obj: ModelType,
+        obj_in: Union[UpdateSchemaType, Dict[str, Any]],
+    ) -> ModelType:
+        obj_data = dict(db_obj.__dict__)
+        obj_data.pop('_sa_instance_state')
+
+        if isinstance(obj_in, dict):
+            update_data = obj_in
+        else:
+            update_data = obj_in.dict(exclude_unset=True)
+
+        for field in obj_data:
+            if field in update_data:
+                setattr(db_obj, field, update_data[field])
+
+        db.add(db_obj)
+        await db.flush()
+        await db.commit()
+        await db.refresh(db_obj)
+        return db_obj
+
 
 

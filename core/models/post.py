@@ -34,8 +34,6 @@ class Post(Base):
     title = Column(String)
     content = Column(String)
 
-    password_hash = Column(String)
-
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     # user = relationship("User", foreign_keys=[user_id], backref=backref('favorite_blogs'))
     user = relationship("User", foreign_keys=[user_id])
