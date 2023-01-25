@@ -1,3 +1,20 @@
+## TASK
+
+<h3>Description</h3>
+Create a simple RESTful API using FastAPI for a social networking application
+
+<h3>Functional requirements</h3>
+
+There should be some form of authentication and registration (JWT, Oauth, Oauth 2.0, etc..)
+- As a user I need to be able to signup and login
+- As a user I need to be able to create, edit, delete and view posts
+- As a user I can like or dislike other users’ posts but not my own 
+- The API needs a UI Documentation (Swagger/ReDoc)
+
+Completed bonus section
+- Use emailhunter.co for verifying email existence on registration
+- Use an in-memory DB for storing post likes and dislikes (As a cache, that gets updated whenever new likes and dislikes get added) 
+
 ## Tech Stack
 
 - Docker Compose
@@ -8,9 +25,18 @@
 
 ## Start project for the first time
 
+First you rename environment file for docker-compose:
 ```
+mv .env-dev .env
+```
+You can change settings in this file now or late.
 
+After you can build and run this project:
+```
 docker-compose up -d --build
+```
+And create database schema.
+```
 docker exec main_backend mkdir alembic/versions
 docker exec main_backend alembic revision --autogenerate -m "initial table"
 docker exec main_backend alembic upgrade head
@@ -22,9 +48,11 @@ docker exec main_backend alembic upgrade head
 
 ## Start created docker-compose again
 
+After completed all steps from "Start project for the first time" you can run docker-compose again without rebuild:  
+
 ```docker-compose up -d```
 
-If have had change in db schema
+If have had changes in db schema you have to run:
 
 ```docker exec main_backend alembic upgrade head```
 
