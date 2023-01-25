@@ -49,13 +49,17 @@ docker exec fastapi_backend alembic upgrade head
 
 ## Stop docker-compose
 
-```docker-compose down```
+```
+docker-compose down
+```
 
 ## Start created docker-compose again
 
 After completed all steps from "Start project for the first time" you can run docker-compose again without rebuild:  
 
-```docker-compose up -d```
+```
+docker-compose up -d
+```
 
 If have had changes in db schema you have to run:
 
