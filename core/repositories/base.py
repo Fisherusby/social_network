@@ -25,7 +25,7 @@ class BaseRepository:
         skip: int = 0,
         limit: int = 100,
     ) -> List[ModelType]:
-
+        """Select all objects in database."""
         return (await db.execute(select(self.model).offset(skip).limit(limit))).scalars().all()
 
     async def get_by_id(self, db: AsyncSession, *, id: int) -> Optional[ModelType]:

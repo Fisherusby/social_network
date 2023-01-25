@@ -10,7 +10,7 @@ from core.config.security import verify_password
 
 class UserService(BaseObjectService):
 
-    async def registration(self, db: AsyncSession, data):
+    async def registration(self, db: AsyncSession, data) -> None:
         """User registration flow."""
         is_exist = await self.repository.get_by_email(db=db, email=data.email)
         if is_exist is not None:
@@ -23,7 +23,7 @@ class UserService(BaseObjectService):
         await self.repository.create(db=db, obj_in=data)
 
     @staticmethod
-    def _check_email_by_emailhunter(email: str):
+    def _check_email_by_emailhunter(email: str) -> None:
         """Use emailhunter.co for verifying email existence on registration."""
 
         url = settings.EMAIL_VERIFY_API_URL.format(email, settings.EMAIL_VERIFY_API_KEY)
@@ -44,7 +44,7 @@ class UserService(BaseObjectService):
                 raise HTTPException(
                     status_code=422, detail=f"Your email has <{rest_result}> result by emailhunter.co")
 
-    async def get_user_for_auth(self, db: AsyncSession, id: int):
+    async def get_user_for_auth(self, db: AsyncSession, id: int) -> models.User:
         """Get user by id and raise if user isn`t exist"""
         if id is None:
             raise HTTPException(status_code=404, detail=f"User not found")
@@ -55,7 +55,7 @@ class UserService(BaseObjectService):
         else:
             return user
 
-    async def authenticate(self, db: AsyncSession, email: str, password: str):
+    async def authenticate(self, db: AsyncSession, email: str, password: str) -> schemas.OAuth2TokensResponse:
         """User authenticate flow"""
         user: models.User = await self.repository.get_by_field(db=db, field_name='email', value=email, only_one=True)
         if user is None:

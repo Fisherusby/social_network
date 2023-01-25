@@ -8,7 +8,7 @@ class JWT:
     def __init__(self, algorithm: str = "HS256"):
         self.algorithm = algorithm
 
-    def encode(self, data: dict, token_type: str):
+    def encode(self, data: dict, token_type: str) -> str:
         """Encode JWT token"""
         to_encode = data.copy()
 
@@ -23,7 +23,7 @@ class JWT:
         encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=self.algorithm)
         return encoded_jwt
 
-    def decode(self, token):
+    def decode(self, token) -> dict:
         """Decode JWT token"""
         try:
             data = jwt.decode(token, settings.SECRET_KEY, algorithms=[self.algorithm])

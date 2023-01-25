@@ -56,7 +56,7 @@ async def update_post(
     return post
 
 
-@router.delete('/post/{post_id}', status_code=200, )
+@router.delete('/post/{post_id}', status_code=200)
 async def delete_post(
     post_id: int,
     db: AsyncSession = Depends(depends.get_session),
@@ -67,7 +67,7 @@ async def delete_post(
     return {"message": "Successfully deleted"}
 
 
-@router.patch('/post/{post_id}/like', status_code=200, )
+@router.patch('/post/{post_id}/like', status_code=200)
 async def like_post(
     post_id: int,
     db: AsyncSession = Depends(depends.get_session),
@@ -80,7 +80,7 @@ async def like_post(
     )
 
 
-@router.patch('/post/{post_id}/dislike', status_code=200, )
+@router.patch('/post/{post_id}/dislike', status_code=200)
 async def dislike_post(
     post_id: int,
     db: AsyncSession = Depends(depends.get_session),

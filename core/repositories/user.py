@@ -11,9 +11,11 @@ CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 class UserRepository(BaseRepository):
 
     async def get_by_email(self, db: AsyncSession, *, email: str):
+        """Get user by email"""
         return await self.get_by_field(db=db, field_name='email', value=email, only_one=True)
 
     async def create(self, db: AsyncSession, *, obj_in: Union[CreateSchemaType, dict]):
+        """Create user with hashed password"""
         create_data: dict = dict(obj_in)
 
         password = create_data.pop('password', None)

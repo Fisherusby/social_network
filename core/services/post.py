@@ -35,14 +35,16 @@ class PostService(BaseObjectService):
         post.like_count = await self._get_cache_post_like(db=db, post_id=post.id)
         return post
 
-    async def delete_post(self, db: AsyncSession, post_id: int, current_user: models.User):
+    async def delete_post(self, db: AsyncSession, post_id: int, current_user: models.User) -> None:
         """Delete your post by id"""
         post: models.Post = await self.repository.get_post_by_id(
             db=db, post_id=post_id, user_id=current_user.id, owner=True
         )
         await self.repository.delete_by_id(db=db, id=post.id)
 
-    async def update_post(self, db: AsyncSession, post_id: int, data: schemas.UpdatePost, current_user: models.User):
+    async def update_post(
+            self, db: AsyncSession, post_id: int, data: schemas.UpdatePost, current_user: models.User
+    ) -> models.Post:
         """Update your post by id"""
         post: models.Post = await self.repository.get_post_by_id(
             db=db, post_id=post_id, user_id=current_user.id, owner=True
@@ -50,7 +52,7 @@ class PostService(BaseObjectService):
         update_post: models.Post = await self.repository.update(db=db, db_obj=post, obj_in=data)
         return await self._attach_post_info(db=db, post=update_post)
 
-    async def like_post(self, db: AsyncSession, post_id: int, current_user: models.User, like: bool):
+    async def like_post(self, db: AsyncSession, post_id: int, current_user: models.User, like: bool) -> dict:
         await self.repository.get_post_by_id(
             db=db, post_id=post_id, user_id=current_user.id, owner=False
         )
@@ -75,7 +77,7 @@ class PostService(BaseObjectService):
             await self._inc_cache_post_like(post_id=post_id, like=like)
             return {'message': f"Successful set {contstants.like_types[like]}"}
 
-    async def _inc_cache_post_like(self, post_id: int, like: bool, inc: int = 1):
+    async def _inc_cache_post_like(self, post_id: int, like: bool, inc: int = 1) -> None:
         key_data = f'{post_id}_{contstants.like_types[like]}'
         await services.redis_service.incrby(key_data, amount=inc)
 

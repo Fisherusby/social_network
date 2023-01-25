@@ -53,4 +53,5 @@ class Redis:
         await self.app.decrby(key, amount)
         return True
 
+
 redis_service = Redis(url=f"redis://{settings.REDIS_HOST}", password=settings.REDIS_PASSWORD)

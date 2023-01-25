@@ -26,7 +26,7 @@ async def get_current_user_or_none(
     db: AsyncSession = Depends(get_session),
     token: str = Depends(reusable_oauth2_not_error)
 ) -> Optional[models.User]:
-    """Return current user by access_token."""
+    """Return current user or anonymous user by access_token."""
     if token is None:
         return None
     current_user: models.User = await get_current_user(db=db, token=token)
