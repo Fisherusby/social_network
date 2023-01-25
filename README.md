@@ -9,6 +9,7 @@
 ## Start project for the first time
 
 ```
+
 docker-compose up -d --build
 docker exec main_backend mkdir alembic/versions
 docker exec main_backend alembic revision --autogenerate -m "initial table"
