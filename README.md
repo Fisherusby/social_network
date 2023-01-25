@@ -20,6 +20,7 @@ Completed bonus section
 - Docker Compose
 - FastAPI
 - PostgreSQL
+- Radis
 - SQLAlchemy
 - Alembic
 
