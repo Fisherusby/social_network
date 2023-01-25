@@ -19,7 +19,7 @@ class JWT:
         else:
             raise HTTPException(status_code=500, detail="Internal Server Error. Invalid token type.")
 
-        to_encode.update({"exp": expire})
+        to_encode.update({"exp": expire, 'token': token_type})
         encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=self.algorithm)
         return encoded_jwt
 

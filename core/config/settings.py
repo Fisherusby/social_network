@@ -26,6 +26,10 @@ class Settings(BaseSettings):
 
     SQLALCHEMY_DATABASE_URI: str
 
+    REDIS_PASSWORD: str
+    REDIS_HOST: str
+    REDIS_PORT: str
+
     class Config:
         case_sensitive = True
 

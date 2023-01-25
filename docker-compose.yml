@@ -2,10 +2,7 @@ version: '3'
 
 volumes:
   postgres_data: { }
-  redis_cache_data: { }
-  redis_timeline_data: { }
-  redis_statistics_data: { }
-  redis_processing_state_data: { }
+  redis_data: { }
 
 services:
   fastapi:
@@ -20,6 +17,7 @@ services:
       - MODULE_NAME=core.main
     depends_on:
       - postgres
+      - redis
     ports:
       - "8080:80"
     command: /start-reload.sh
@@ -36,6 +34,22 @@ services:
       - "5432:5432"
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
+
+  redis:
+    container_name: redis_cache
+    image: redis:7.0
+    restart: always
+    ports:
+      - '${REDIS_PORT}:${REDIS_PORT}'
+    command: redis-server --port ${REDIS_PORT} --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
     env_file:
       - .env
 

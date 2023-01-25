@@ -24,11 +24,18 @@ class Author(schemas.BaseUser):
     id: int
 
 
+class LikeDislike(BaseModel):
+    like: int
+    dislike: int
+
+
 class Post(BasePost):
     id: int
     user: Author
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
+    like_count: Optional[LikeDislike]
+    like: Optional[bool]
 
 
 class Pagination(BaseAPIModel):

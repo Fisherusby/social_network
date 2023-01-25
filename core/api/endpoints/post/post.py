@@ -4,7 +4,7 @@ from core.config import contstants
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List, Any
+from typing import List, Any, Optional
 
 
 router = APIRouter()
@@ -13,10 +13,11 @@ router = APIRouter()
 @router.get('/posts', status_code=200, response_model=List[schemas.Post])
 async def get_posts(
     pagination: schemas.Pagination = Depends(schemas.Pagination),
+    current_user: Optional[models.User] = Depends(depends.get_current_user_or_none),
     db: AsyncSession = Depends(depends.get_session),
 ):
     """Endpoint to get posts list"""
-    posts: List[models.Post] = await services.post_service.get_posts(db=db, pagination=pagination)
+    posts: List[schemas.Post] = await services.post_service.get_posts(db=db, pagination=pagination, user=current_user)
     return posts
 
 
@@ -34,10 +35,11 @@ async def create_post(
 @router.get('/post/{post_id}', status_code=200, response_model=schemas.Post)
 async def view_post(
     post_id: int,
+    current_user: Optional[models.User] = Depends(depends.get_current_user_or_none),
     db: AsyncSession = Depends(depends.get_session),
 ):
     """Endpoint to view a post"""
-    post: models.Post = await services.post_service.get_post(db=db, post_id=post_id)
+    post: models.Post = await services.post_service.get_post(db=db, post_id=post_id, user=current_user)
 
     return post
 

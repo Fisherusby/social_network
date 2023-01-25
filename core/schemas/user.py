@@ -15,6 +15,14 @@ def validate_password(v: Optional[str]) -> Optional[str]:
     return v
 
 
+class RefreshTokenRequest(BaseAPIModel):
+    refresh_token: str
+
+
+class AccessTokenResponse(BaseAPIModel):
+    access_token: str
+
+
 class Email(BaseAPIModel):
     email: EmailStr
 

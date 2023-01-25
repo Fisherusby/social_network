@@ -1,4 +1,3 @@
-from core import services
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,3 +18,14 @@ async def login(
     auth_data = await services.user_service.authenticate(db=db, email=form_data.username, password=form_data.password)
 
     return auth_data
+
+
+@router.post('/refresh', status_code=200, response_model=schemas.AccessTokenResponse)
+async def login(
+    data: schemas.RefreshTokenRequest,
+    db: AsyncSession = Depends(depends.get_session),
+) -> Any:
+    """Endpoint to user sing in"""
+    access_token = await services.user_service.refresh_token(db=db, refresh_token=data.refresh_token)
+
+    return access_token

@@ -78,5 +78,15 @@ class UserService(BaseObjectService):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    async def refresh_token(self, db: AsyncSession, refresh_token: str) -> schemas.AccessTokenResponse:
+        token_data = services.jwt_service.decode(token=refresh_token)
+        if token_data.get('token', None) is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid refresh token"
+            )
+        access_token = services.jwt_service.encode(data=token_data, token_type='access_token')
+        return schemas.AccessTokenResponse(access_token=access_token)
+
 
 user_service = UserService(repository=repositories.user)
