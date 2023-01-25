@@ -42,6 +42,10 @@ docker exec main_backend alembic revision --autogenerate -m "initial table"
 docker exec main_backend alembic upgrade head
 ```
 
+## UI Api Documentation (Swagger endpoint) 
+
+[http://localhost:8080/swagger](http://localhost:8080/swagger)
+
 ## Stop docker-compose
 
 ```docker-compose down```
@@ -56,6 +60,10 @@ If have had changes in db schema you have to run:
 
 ```docker exec main_backend alembic upgrade head```
 
-## Api doc (Swagger endpoint) 
+## emailhunter.co for verifying email
 
-[http://localhost:8080/swagger](http://localhost:8080/swagger)
+If you want use emailhunter.co for verifying email you need set
+EMAIL_VERIFY as True and
+EMAIL_VERIFY_API_KEY as your api key from emailhunter.co platform.
+
+
