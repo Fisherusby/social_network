@@ -37,9 +37,9 @@ docker-compose up -d --build
 ```
 And create database schema.
 ```
-docker exec main_backend mkdir alembic/versions
-docker exec main_backend alembic revision --autogenerate -m "initial table"
-docker exec main_backend alembic upgrade head
+docker exec fastapi_backend mkdir alembic/versions
+docker exec fastapi_backend alembic revision --autogenerate -m "initial table"
+docker exec fastapi_backend alembic upgrade head
 ```
 
 ## UI Api Documentation (Swagger endpoint) 
@@ -58,7 +58,7 @@ After completed all steps from "Start project for the first time" you can run do
 
 If have had changes in db schema you have to run:
 
-```docker exec main_backend alembic upgrade head```
+```docker exec fastapi_backend alembic upgrade head```
 
 ## emailhunter.co for verifying email
 
