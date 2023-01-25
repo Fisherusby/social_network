@@ -59,7 +59,10 @@ After completed all steps from "Start project for the first time" you can run do
 
 If have had changes in db schema you have to run:
 
-```docker exec fastapi_backend alembic upgrade head```
+```
+docker exec fastapi_backend alembic revision --autogenerate
+docker exec fastapi_backend alembic upgrade head
+```
 
 ## emailhunter.co for verifying email
 
