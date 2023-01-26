@@ -35,7 +35,7 @@ class PostRepository(BaseRepository):
             return result
         else:
             query = select(self.model)
-            query = query.options(selectinload(self.model.user))
+            query = query.options(selectinload(self.model.user)).order_by(models.Post.created_at.desc())
             return (await db.execute(query.offset(skip).limit(limit))).scalars().all()
 
     async def get_post_by_id(
