@@ -1,7 +1,6 @@
 from typing import List, Optional
 from uuid import UUID
 
-from fastapi import HTTPException
 from sqlalchemy import and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -35,44 +34,14 @@ class ContentRepository(BaseRepository):
                 .order_by(models.Post.created_at.desc())
             )
             result: List[models.Post] = []
-            for post, like in (await db.execute(query.offset(skip).limit(limit))).all():
+            posts = (await db.execute(query.offset(skip).limit(limit))).all()
+            for post, like in posts:
                 post.like = like
                 result.append(post)
             return result
         else:
             query = select(self.model).options(selectinload(self.model.user)).order_by(models.Post.created_at.desc())
             return (await db.execute(query.offset(skip).limit(limit))).scalars().all()
-
-    async def get_post_by_id(
-        self,
-        db: AsyncSession,
-        *,
-        post_id: UUID,
-        user_id: UUID = None,
-        owner: bool = None,
-        rise_not_exist: bool = True,
-    ) -> Optional[models.Post]:
-        """Get post with current user like status.
-
-        Check user for this post's owner
-        """
-        post = await self.get_by_id(db=db, id=post_id)
-
-        if user_id is not None:
-            post_like: models.LikeDislikePost = await self.get_user_like_post(db=db, post_id=post_id, user_id=user_id)
-            if post_like is not None:
-                post.like = post_like.like
-        if post is None and rise_not_exist:
-            raise HTTPException(status_code=404, detail=f"Post not found")
-
-        if owner is not None and user_id is not None:
-            if owner and user_id != post.user_id:
-                raise HTTPException(status_code=404, detail=f"You are`t author this post")
-
-            if not owner and user_id == post.user_id:
-                raise HTTPException(status_code=404, detail=f"You are author this post")
-
-        return post
 
     async def get_user_like_post(self, db: AsyncSession, post_id: UUID, user_id: UUID) -> models.LikeDislikePost:
         """Get posts likes status for user."""

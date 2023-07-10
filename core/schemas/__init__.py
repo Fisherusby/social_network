@@ -1,4 +1,4 @@
-from core.schemas.post import (
+from core.schemas.content import (
     CreatePost,
     LikeDislike,
     Pagination,
