@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, Field
 from typing import Optional
 from fastapi import Query
@@ -24,7 +26,7 @@ class UpdatePost(BaseAPIModel):
 
 class Author(schemas.BaseUser):
     """Post author model"""
-    id: int
+    id: UUID
 
 
 class LikeDislike(BaseModel):
@@ -35,10 +37,14 @@ class LikeDislike(BaseModel):
 
 class Post(BasePost):
     """Post with all info model"""
-    id: int
+    id: UUID
     user: Author
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
+
+
+class PostWithInfo(Post):
+    """Post with all info model"""
     like_count: Optional[LikeDislike]
     like: Optional[bool]
 

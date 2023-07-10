@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from core import services, schemas, models
 from core.api import depends
 from core.config import contstants
@@ -10,14 +12,16 @@ from typing import List, Any, Optional
 router = APIRouter()
 
 
-@router.get('/posts', status_code=200, response_model=List[schemas.Post])
+@router.get('/posts', status_code=200, response_model=List[schemas.PostWithInfo])
 async def get_posts(
     pagination: schemas.Pagination = Depends(schemas.Pagination),
     current_user: Optional[models.User] = Depends(depends.get_current_user_or_none),
     db: AsyncSession = Depends(depends.get_session),
 ):
     """Endpoint to get posts list"""
-    posts: List[schemas.Post] = await services.post_service.get_posts(db=db, pagination=pagination, user=current_user)
+    posts: List[schemas.PostWithInfo] = await services.post_service.get_posts(
+        db=db, pagination=pagination, user=current_user
+    )
     return posts
 
 
@@ -34,7 +38,7 @@ async def create_post(
 
 @router.get('/post/{post_id}', status_code=200, response_model=schemas.Post)
 async def view_post(
-    post_id: int,
+    post_id: UUID,
     current_user: Optional[models.User] = Depends(depends.get_current_user_or_none),
     db: AsyncSession = Depends(depends.get_session),
 ):
@@ -46,7 +50,7 @@ async def view_post(
 
 @router.patch('/post/{post_id}', status_code=200, response_model=schemas.Post)
 async def update_post(
-    post_id: int,
+    post_id: UUID,
     data: schemas.UpdatePost,
     db: AsyncSession = Depends(depends.get_session),
     current_user: models.User = Depends(depends.get_current_user),
@@ -58,7 +62,7 @@ async def update_post(
 
 @router.delete('/post/{post_id}', status_code=200)
 async def delete_post(
-    post_id: int,
+    post_id: UUID,
     db: AsyncSession = Depends(depends.get_session),
     current_user: models.User = Depends(depends.get_current_user),
 ):
@@ -69,7 +73,7 @@ async def delete_post(
 
 @router.patch('/post/{post_id}/like', status_code=200)
 async def like_post(
-    post_id: int,
+    post_id: UUID,
     db: AsyncSession = Depends(depends.get_session),
     current_user: models.User = Depends(depends.get_current_user),
 ) -> Any:
@@ -82,7 +86,7 @@ async def like_post(
 
 @router.patch('/post/{post_id}/dislike', status_code=200)
 async def dislike_post(
-    post_id: int,
+    post_id: UUID,
     db: AsyncSession = Depends(depends.get_session),
     current_user: models.User = Depends(depends.get_current_user),
 ) -> Any:

@@ -1,3 +1,4 @@
+from uuid import UUID
 from core.repositories.base import BaseRepository
 from core import models
 from typing import List, Optional
@@ -42,8 +43,8 @@ class PostRepository(BaseRepository):
         self,
         db: AsyncSession,
         *,
-        post_id: int,
-        user_id: int = None,
+        post_id: UUID,
+        user_id: UUID = None,
         owner: bool = None,
         rise_not_exist: bool = True,
     ) -> Optional[models.Post]:
@@ -68,14 +69,14 @@ class PostRepository(BaseRepository):
 
         return post
 
-    async def get_user_like_post(self, db: AsyncSession, post_id: int, user_id: int):
+    async def get_user_like_post(self, db: AsyncSession, post_id: UUID, user_id: UUID):
         """Get posts likes status for user"""
         query = select(models.LikeDislikePost)\
             .filter(models.LikeDislikePost.user_id == user_id)\
             .filter(models.LikeDislikePost.post_id == post_id)
         return (await db.execute(query)).scalar_one_or_none()
 
-    async def set_like(self, db: AsyncSession, post_id: int, user_id: int, like: bool):
+    async def set_like(self, db: AsyncSession, post_id: UUID, user_id: UUID, like: bool):
         """Set post likes status for user"""
         odj_data: dict = {
             'user_id': user_id,
@@ -92,7 +93,7 @@ class PostRepository(BaseRepository):
         await db.delete(like_obj)
         await db.commit()
 
-    async def calculate_like(self, db: AsyncSession, post_id: int, like:bool) -> int:
+    async def calculate_like(self, db: AsyncSession, post_id: UUID, like: bool) -> int:
         """Calculate count of likes and dislikes for post"""
         sub_query = select(models.LikeDislikePost)\
             .filter(models.LikeDislikePost.post_id == post_id)\

@@ -18,7 +18,7 @@ async def get_session() -> AsyncSession:
 async def get_current_user(db: AsyncSession = Depends(get_session), token: str = Depends(oauth2_scheme)) -> models.User:
     """Return current user by access_token."""
     token_data = services.jwt_service.decode(token=token)
-    current_user: models.User = await services.user_service.get_user_for_auth(db=db, id=token_data.get('id'))
+    current_user: models.User = await services.user_service.get_user_for_auth(db=db, user_id=token_data.get('id'))
     return current_user
 
 

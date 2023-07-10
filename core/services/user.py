@@ -1,4 +1,5 @@
 import requests
+from uuid import UUID
 from core import repositories, models, services, schemas
 from core.config import settings
 from core.services.base import BaseObjectService
@@ -44,12 +45,12 @@ class UserService(BaseObjectService):
                 raise HTTPException(
                     status_code=422, detail=f"Your email has <{rest_result}> result by emailhunter.co")
 
-    async def get_user_for_auth(self, db: AsyncSession, id: int) -> models.User:
+    async def get_user_for_auth(self, db: AsyncSession, user_id: UUID) -> models.User:
         """Get user by id and raise if user isn`t exist"""
         if id is None:
             raise HTTPException(status_code=404, detail=f"User not found")
 
-        user: models.User = await self.repository.get_by_id(db=db, id=id)
+        user: models.User = await self.repository.get_by_id(db=db, id=user_id)
         if user is None:
             raise HTTPException(status_code=404, detail=f"User not found")
         else:
@@ -63,7 +64,7 @@ class UserService(BaseObjectService):
 
         if verify_password(password, user.password_hash):
             token_data = {
-                'id': user.id,
+                'id': str(user.id),
             }
             response = {
                 "token_type": "Bearer",

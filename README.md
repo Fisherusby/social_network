@@ -34,7 +34,7 @@ You can change settings in this file now or late.
 
 After you can build and run this project:
 ```
-docker-compose up -d --build
+docker compose up -d --build
 ```
 And create database schema.
 ```
@@ -50,7 +50,7 @@ docker exec fastapi_backend alembic upgrade head
 ## Stop docker-compose
 
 ```
-docker-compose down
+docker compose down
 ```
 
 ## Start created docker-compose again
@@ -58,7 +58,7 @@ docker-compose down
 After completed all steps from "Start project for the first time" you can run docker-compose again without rebuild:  
 
 ```
-docker-compose up -d
+docker compose up -d
 ```
 
 If have had changes in db schema you have to run:

@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from core import models, schemas, services
 from core import repositories
 from core.services.base import BaseObjectService
@@ -24,7 +26,7 @@ class PostService(BaseObjectService):
         post.user = user
         return post
 
-    async def get_post(self, db: AsyncSession, post_id: int, user: Optional[models.User] = None) -> models.Post:
+    async def get_post(self, db: AsyncSession, post_id: UUID, user: Optional[models.User] = None) -> models.Post:
         """Get a post."""
         user_id = user.id if user is not None else None
         post: models.Post = await self.repository.get_post_by_id(db=db, post_id=post_id, user_id=user_id)
@@ -35,7 +37,7 @@ class PostService(BaseObjectService):
         post.like_count = await self._get_cache_post_like(db=db, post_id=post.id)
         return post
 
-    async def delete_post(self, db: AsyncSession, post_id: int, current_user: models.User) -> None:
+    async def delete_post(self, db: AsyncSession, post_id: UUID, current_user: models.User) -> None:
         """Delete your post by id"""
         post: models.Post = await self.repository.get_post_by_id(
             db=db, post_id=post_id, user_id=current_user.id, owner=True
@@ -43,7 +45,7 @@ class PostService(BaseObjectService):
         await self.repository.delete_by_id(db=db, id=post.id)
 
     async def update_post(
-            self, db: AsyncSession, post_id: int, data: schemas.UpdatePost, current_user: models.User
+            self, db: AsyncSession, post_id: UUID, data: schemas.UpdatePost, current_user: models.User
     ) -> models.Post:
         """Update your post by id"""
         post: models.Post = await self.repository.get_post_by_id(
@@ -52,7 +54,7 @@ class PostService(BaseObjectService):
         update_post: models.Post = await self.repository.update(db=db, db_obj=post, obj_in=data)
         return await self._attach_post_info(db=db, post=update_post)
 
-    async def like_post(self, db: AsyncSession, post_id: int, current_user: models.User, like: bool) -> dict:
+    async def like_post(self, db: AsyncSession, post_id: UUID, current_user: models.User, like: bool) -> dict:
         await self.repository.get_post_by_id(
             db=db, post_id=post_id, user_id=current_user.id, owner=False
         )
@@ -77,11 +79,11 @@ class PostService(BaseObjectService):
             await self._inc_cache_post_like(post_id=post_id, like=like)
             return {'message': f"Successful set {contstants.like_types[like]}"}
 
-    async def _inc_cache_post_like(self, post_id: int, like: bool, inc: int = 1) -> None:
+    async def _inc_cache_post_like(self, post_id: UUID, like: bool, inc: int = 1) -> None:
         key_data = f'{post_id}_{contstants.like_types[like]}'
         await services.redis_service.incrby(key_data, amount=inc)
 
-    async def _get_cache_post_like(self, db: AsyncSession, post_id: int, recalc: bool = False) -> schemas.LikeDislike:
+    async def _get_cache_post_like(self, db: AsyncSession, post_id: UUID, recalc: bool = False) -> schemas.LikeDislike:
         key_prefix = f'{post_id}_'
         like_data = {}
 

@@ -1,5 +1,5 @@
 from typing import Any, Dict, List, Optional, Type, TypeVar, Union
-
+from uuid import UUID
 from pydantic import BaseModel
 from core.models.base import Base
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,7 +28,7 @@ class BaseRepository:
         """Select all objects in database."""
         return (await db.execute(select(self.model).offset(skip).limit(limit))).scalars().all()
 
-    async def get_by_id(self, db: AsyncSession, *, id: int) -> Optional[ModelType]:
+    async def get_by_id(self, db: AsyncSession, *, id: UUID) -> Optional[ModelType]:
         """Select an object in database by ID."""
         query = select(self.model).filter(self.model.id == id)
         res = (await db.execute(query)).scalar_one_or_none()
@@ -59,7 +59,7 @@ class BaseRepository:
 
         return db_obj
 
-    async def delete_by_id(self, db: AsyncSession, *, id: int):
+    async def delete_by_id(self, db: AsyncSession, *, id: UUID):
         """Delete an object in database by ID."""
         obj = await self.get_by_id(db=db, id=id)
 
@@ -99,6 +99,3 @@ class BaseRepository:
         await db.commit()
         await db.refresh(db_obj)
         return db_obj
-
-
-

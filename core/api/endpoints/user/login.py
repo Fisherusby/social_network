@@ -21,7 +21,7 @@ async def login(
 
 
 @router.post('/refresh', status_code=200, response_model=schemas.AccessTokenResponse)
-async def login(
+async def refresh(
     data: schemas.RefreshTokenRequest,
     db: AsyncSession = Depends(depends.get_session),
 ) -> Any:
