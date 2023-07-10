@@ -1,11 +1,12 @@
 from typing import Any, Dict, List, Optional, Type, TypeVar, Union
 from uuid import UUID
+
 from pydantic import BaseModel
-from core.models.base import Base
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import delete
 
+from core.models.base import Base
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -35,8 +36,7 @@ class BaseRepository:
         return res
 
     async def get_by_field(
-            self, db: AsyncSession, *, field_name: str, value: str, only_one: bool = False,
-            skip: int = 0, limit: int = 100
+        self, db: AsyncSession, *, field_name: str, value: str, only_one: bool = False, skip: int = 0, limit: int = 100
     ):
         """Select objects in database by field value.
 

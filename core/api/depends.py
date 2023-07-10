@@ -1,16 +1,18 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from core.db import async_session
-from fastapi.security import OAuth2PasswordBearer
-from fastapi import Depends
 from typing import Optional
+
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from core import models, services
+from core.db import async_session
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 reusable_oauth2_not_error = OAuth2PasswordBearer(tokenUrl=f"/api/auth/login", auto_error=False)
 
 
 async def get_session() -> AsyncSession:
-    """Session dependent injection"""
+    """Session dependent injection."""
     async with async_session() as session:
         yield session
 
@@ -23,8 +25,7 @@ async def get_current_user(db: AsyncSession = Depends(get_session), token: str =
 
 
 async def get_current_user_or_none(
-    db: AsyncSession = Depends(get_session),
-    token: str = Depends(reusable_oauth2_not_error)
+    db: AsyncSession = Depends(get_session), token: str = Depends(reusable_oauth2_not_error)
 ) -> Optional[models.User]:
     """Return current user or anonymous user by access_token."""
     if token is None:

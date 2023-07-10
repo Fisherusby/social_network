@@ -1,7 +1,9 @@
-from jose import JWTError, jwt
 from datetime import datetime, timedelta
-from core.config import settings
+
 from fastapi import HTTPException, status
+from jose import JWTError, jwt
+
+from core.config import settings
 
 
 class JWT:
@@ -9,7 +11,7 @@ class JWT:
         self.algorithm = algorithm
 
     def encode(self, data: dict, token_type: str) -> str:
-        """Encode JWT token"""
+        """Encode JWT token."""
         to_encode = data.copy()
 
         token_duration = settings.ACCESS_TOKEN_DURATION.get(token_type, None)
@@ -24,7 +26,7 @@ class JWT:
         return encoded_jwt
 
     def decode(self, token) -> dict:
-        """Decode JWT token"""
+        """Decode JWT token."""
         try:
             data = jwt.decode(token, settings.SECRET_KEY, algorithms=[self.algorithm])
         except JWTError:

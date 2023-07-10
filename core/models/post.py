@@ -1,8 +1,8 @@
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 from .base import Base
-from sqlalchemy import Column, ForeignKey, String, Integer, Boolean
-from sqlalchemy.orm import relationship
 
 
 class Post(Base):
@@ -23,5 +23,3 @@ class LikeDislikePost(Base):
     user = relationship("User", foreign_keys=[user_id])
     post_id = Column(UUID(as_uuid=True), ForeignKey('post.id', ondelete="CASCADE"), nullable=False)
     post = relationship("Post", foreign_keys=[post_id])
-
-

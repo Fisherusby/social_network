@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from core.api.endpoints import user_registration_router, user_login_router, post_router
 
+from core.api.endpoints import post_router, user_login_router, user_registration_router
 
 router: APIRouter = APIRouter()
 

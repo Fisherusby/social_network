@@ -1,5 +1,7 @@
+from typing import Any, Optional
+
 import aioredis
-from typing import Optional, Any
+
 from core.config import settings
 
 

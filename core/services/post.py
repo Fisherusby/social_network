@@ -1,16 +1,16 @@
+from typing import List, Optional
 from uuid import UUID
 
-from core import models, schemas, services
-from core import repositories
-from core.services.base import BaseObjectService
-from core.config import contstants
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List, Optional
+
+from core import models, repositories, schemas, services
+from core.config import contstants
+from core.services.base import BaseObjectService
 
 
 class PostService(BaseObjectService):
     async def get_posts(
-            self, db: AsyncSession, pagination: schemas.Pagination, user: Optional[models.User] = None
+        self, db: AsyncSession, pagination: schemas.Pagination, user: Optional[models.User] = None
     ) -> List[models.Post]:
         """Get all posts."""
         all_posts: List[models.Post] = await self.repository.get_posts(
@@ -38,16 +38,16 @@ class PostService(BaseObjectService):
         return post
 
     async def delete_post(self, db: AsyncSession, post_id: UUID, current_user: models.User) -> None:
-        """Delete your post by id"""
+        """Delete your post by id."""
         post: models.Post = await self.repository.get_post_by_id(
             db=db, post_id=post_id, user_id=current_user.id, owner=True
         )
         await self.repository.delete_by_id(db=db, id=post.id)
 
     async def update_post(
-            self, db: AsyncSession, post_id: UUID, data: schemas.UpdatePost, current_user: models.User
+        self, db: AsyncSession, post_id: UUID, data: schemas.UpdatePost, current_user: models.User
     ) -> models.Post:
-        """Update your post by id"""
+        """Update your post by id."""
         post: models.Post = await self.repository.get_post_by_id(
             db=db, post_id=post_id, user_id=current_user.id, owner=True
         )
@@ -55,9 +55,7 @@ class PostService(BaseObjectService):
         return await self._attach_post_info(db=db, post=update_post)
 
     async def like_post(self, db: AsyncSession, post_id: UUID, current_user: models.User, like: bool) -> dict:
-        await self.repository.get_post_by_id(
-            db=db, post_id=post_id, user_id=current_user.id, owner=False
-        )
+        await self.repository.get_post_by_id(db=db, post_id=post_id, user_id=current_user.id, owner=False)
         user_like_post: models.LikeDislikePost = await self.repository.get_user_like_post(
             db=db, post_id=post_id, user_id=current_user.id
         )

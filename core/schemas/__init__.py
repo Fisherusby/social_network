@@ -1,3 +1,15 @@
-from core.schemas.user import BaseUserRegistrationRequest, OAuth2TokensResponse, BaseUser, RefreshTokenRequest, \
-    AccessTokenResponse
-from core.schemas.post import CreatePost, UpdatePost, Post, Pagination, LikeDislike, PostWithInfo
+from core.schemas.post import (
+    CreatePost,
+    LikeDislike,
+    Pagination,
+    Post,
+    PostWithInfo,
+    UpdatePost,
+)
+from core.schemas.user import (
+    AccessTokenResponse,
+    BaseUser,
+    BaseUserRegistrationRequest,
+    OAuth2TokensResponse,
+    RefreshTokenRequest,
+)

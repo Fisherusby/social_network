@@ -1,13 +1,12 @@
+from typing import Any, List, Optional
 from uuid import UUID
-
-from core import services, schemas, models
-from core.api import depends
-from core.config import contstants
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List, Any, Optional
 
+from core import models, schemas, services
+from core.api import depends
+from core.config import contstants
 
 router = APIRouter()
 
@@ -18,7 +17,7 @@ async def get_posts(
     current_user: Optional[models.User] = Depends(depends.get_current_user_or_none),
     db: AsyncSession = Depends(depends.get_session),
 ):
-    """Endpoint to get posts list"""
+    """Endpoint to get posts list."""
     posts: List[schemas.PostWithInfo] = await services.post_service.get_posts(
         db=db, pagination=pagination, user=current_user
     )
@@ -31,7 +30,7 @@ async def create_post(
     db: AsyncSession = Depends(depends.get_session),
     current_user: models.User = Depends(depends.get_current_user),
 ):
-    """Endpoint to create a post"""
+    """Endpoint to create a post."""
     created_post: models.Post = await services.post_service.create_post(db=db, data=data, user=current_user)
     return created_post
 
@@ -42,7 +41,7 @@ async def view_post(
     current_user: Optional[models.User] = Depends(depends.get_current_user_or_none),
     db: AsyncSession = Depends(depends.get_session),
 ):
-    """Endpoint to view a post"""
+    """Endpoint to view a post."""
     post: models.Post = await services.post_service.get_post(db=db, post_id=post_id, user=current_user)
 
     return post
@@ -55,7 +54,7 @@ async def update_post(
     db: AsyncSession = Depends(depends.get_session),
     current_user: models.User = Depends(depends.get_current_user),
 ):
-    """Endpoint to edit a post"""
+    """Endpoint to edit a post."""
     post = await services.post_service.update_post(db=db, post_id=post_id, data=data, current_user=current_user)
     return post
 
@@ -66,7 +65,7 @@ async def delete_post(
     db: AsyncSession = Depends(depends.get_session),
     current_user: models.User = Depends(depends.get_current_user),
 ):
-    """Endpoint to delete a post"""
+    """Endpoint to delete a post."""
     await services.post_service.delete_post(db=db, post_id=post_id, current_user=current_user)
     return {"message": "Successfully deleted"}
 
@@ -77,7 +76,7 @@ async def like_post(
     db: AsyncSession = Depends(depends.get_session),
     current_user: models.User = Depends(depends.get_current_user),
 ) -> Any:
-    """Endpoint to like a post"""
+    """Endpoint to like a post."""
 
     return await services.post_service.like_post(
         db=db, post_id=post_id, current_user=current_user, like=contstants.post_like
@@ -90,10 +89,8 @@ async def dislike_post(
     db: AsyncSession = Depends(depends.get_session),
     current_user: models.User = Depends(depends.get_current_user),
 ) -> Any:
-    """Endpoint to dislike a post"""
+    """Endpoint to dislike a post."""
 
     return await services.post_service.like_post(
         db=db, post_id=post_id, current_user=current_user, like=contstants.post_dislike
     )
-
-
