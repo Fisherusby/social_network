@@ -16,7 +16,9 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
 ) -> Any:
     """Endpoint to user sing in."""
-    auth_data = await services.user_service.authenticate(db=db, email=form_data.username, password=form_data.password)
+    auth_data: schemas.OAuth2TokensResponse = await services.user_service.authenticate(
+        db=db, email=form_data.username, password=form_data.password
+    )
 
     return auth_data
 
@@ -27,6 +29,8 @@ async def refresh(
     db: AsyncSession = Depends(depends.get_session),
 ) -> Any:
     """Endpoint to user sing in."""
-    access_token = await services.user_service.refresh_token(db=db, refresh_token=data.refresh_token)
+    access_token: schemas.AccessTokenResponse = await services.user_service.refresh_token(
+        db=db, refresh_token=data.refresh_token
+    )
 
     return access_token

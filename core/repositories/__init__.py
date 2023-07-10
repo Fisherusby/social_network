@@ -1,2 +1,2 @@
-from core.repositories.post import post
+from core.repositories.content import content
 from core.repositories.user import user

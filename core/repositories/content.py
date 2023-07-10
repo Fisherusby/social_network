@@ -11,7 +11,7 @@ from core import models
 from core.repositories.base import BaseRepository
 
 
-class PostRepository(BaseRepository):
+class ContentRepository(BaseRepository):
     async def get_posts(
         self,
         db: AsyncSession,
@@ -28,19 +28,19 @@ class PostRepository(BaseRepository):
                 .subquery()
             )
 
-            query = select(self.model, sub_query.c.like.label("like")).join(
-                sub_query, and_(sub_query.c.post_id == self.model.id), isouter=True
+            query = (
+                select(self.model, sub_query.c.like.label("like"))
+                .join(sub_query, and_(sub_query.c.post_id == self.model.id), isouter=True)
+                .options(selectinload(self.model.user))
+                .order_by(models.Post.created_at.desc())
             )
-            query = query.options(selectinload(self.model.user))
-            result = []
-            for row in (await db.execute(query.offset(skip).limit(limit))).all():
-                post, like = row
+            result: List[models.Post] = []
+            for post, like in (await db.execute(query.offset(skip).limit(limit))).all():
                 post.like = like
                 result.append(post)
             return result
         else:
-            query = select(self.model)
-            query = query.options(selectinload(self.model.user)).order_by(models.Post.created_at.desc())
+            query = select(self.model).options(selectinload(self.model.user)).order_by(models.Post.created_at.desc())
             return (await db.execute(query.offset(skip).limit(limit))).scalars().all()
 
     async def get_post_by_id(
@@ -74,7 +74,7 @@ class PostRepository(BaseRepository):
 
         return post
 
-    async def get_user_like_post(self, db: AsyncSession, post_id: UUID, user_id: UUID):
+    async def get_user_like_post(self, db: AsyncSession, post_id: UUID, user_id: UUID) -> models.LikeDislikePost:
         """Get posts likes status for user."""
         query = (
             select(models.LikeDislikePost)
@@ -107,4 +107,4 @@ class PostRepository(BaseRepository):
         return (await db.execute(query)).scalar()
 
 
-post = PostRepository(model=models.Post)
+content = ContentRepository(model=models.Post)

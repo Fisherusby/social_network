@@ -15,7 +15,7 @@ async def user_registration(
     *,
     db: AsyncSession = Depends(get_session),
     data: schemas.BaseUserRegistrationRequest,
-):
+) -> dict:
     """Endpoint to registration new user."""
 
     await services.user_service.registration(db=db, data=data)
