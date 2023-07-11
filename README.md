@@ -30,7 +30,7 @@ First you rename environment file for docker-compose:
 ```
 mv .env-dev .env
 ```
-You can change settings in this file now or late.
+You have change settings in this file now or late.
 
 After you can build and run this project:
 ```
