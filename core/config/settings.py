@@ -4,14 +4,13 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
     PROJECT_NAME: str = 'Social network'
     DOCS_URL: str
-    VERSION: str
     API_PREFIX: str = "/api"
     VERSION: str = '0.0.1'
 
     SECRET_KEY: str
 
-    ACCESS_TOKEN_DURATION_DAYS: str = 365
-    REFRESH_TOKEN_DURATION_DAYS: str = 365
+    ACCESS_TOKEN_DURATION_DAYS: int = 365
+    REFRESH_TOKEN_DURATION_DAYS: int = 365
 
     ACCESS_TOKEN_DURATION: dict = {
         "access_token": ACCESS_TOKEN_DURATION_DAYS,

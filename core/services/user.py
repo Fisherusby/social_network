@@ -49,7 +49,7 @@ class UserService(BaseObjectService):
         if id is None:
             raise HTTPException(status_code=404, detail=f"User not found")
 
-        user: models.User = await self.repository.get_by_id(db=db, id=user_id)
+        user: models.User = await self.repository.get_by_id(db=db, obj_id=user_id)
         if user is None:
             raise HTTPException(status_code=404, detail=f"User not found")
         else:

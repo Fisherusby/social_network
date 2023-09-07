@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Type, TypeVar, Union
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -13,7 +13,7 @@ CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
-class BaseRepository:
+class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     """CRUD object with default methods to Create, Read, Update, Delete (CRUD)."""
 
     def __init__(self, model: Type[ModelType]):
@@ -29,9 +29,9 @@ class BaseRepository:
         """Select all objects in database."""
         return (await db.execute(select(self.model).offset(skip).limit(limit))).scalars().all()
 
-    async def get_by_id(self, db: AsyncSession, *, id: UUID) -> Optional[ModelType]:
+    async def get_by_id(self, db: AsyncSession, *, obj_id: UUID) -> Optional[ModelType]:
         """Select an object in database by ID."""
-        query = select(self.model).filter(self.model.id == id)
+        query = select(self.model).filter(self.model.id == obj_id)
         res = (await db.execute(query)).scalar_one_or_none()
         return res
 
@@ -50,8 +50,8 @@ class BaseRepository:
 
     async def create(self, db: AsyncSession, *, obj_in: Union[CreateSchemaType, dict]):
         """Create an object in database."""
-        obj_in: dict = dict(obj_in)
-        db_obj = self.model(**obj_in)
+        obj_dict: dict = dict(obj_in)
+        db_obj = self.model(**obj_dict)
         db.add(db_obj)
         await db.flush()
         await db.commit()
@@ -59,11 +59,11 @@ class BaseRepository:
 
         return db_obj
 
-    async def delete_by_id(self, db: AsyncSession, *, id: UUID):
+    async def delete_by_id(self, db: AsyncSession, *, obj_id: UUID):
         """Delete an object in database by ID."""
-        obj = await self.get_by_id(db=db, id=id)
+        obj = await self.get_by_id(db=db, obj_id=obj_id)
 
-        query = delete(self.model).where(self.model.id == id)
+        query = delete(self.model).where(self.model.id == obj_id)
 
         await db.execute(query)
         await db.commit()

@@ -6,14 +6,17 @@ from pydantic import BaseModel, EmailStr, validator
 from core.schemas.base import BaseAPIModel
 
 
+class ValidatePasswordError(ValueError):
+    message: str = "Password must contain between 8 and 32 symbols (numbers and/or letters and/or special characters)"
+
+
 def validate_password(v: Optional[str]) -> Optional[str]:
     """Validate password."""
+    if v is None:
+        raise ValidatePasswordError()
     pattern = r"^[A-Za-z\d!#$%&*+\-.<=>?@^_;\]\[~`;\(\)]{8,32}$"
     if not bool(re.match(pattern, v)) or len(v) == 0:
-        raise ValueError(
-            "Password must contain between 8 and 32 symbols (numbers and/or letters and/or special characters)"
-        )
-
+        raise ValidatePasswordError()
     return v
 
 

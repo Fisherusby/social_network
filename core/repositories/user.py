@@ -10,7 +10,7 @@ from core.repositories.base import BaseRepository
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 
 
-class UserRepository(BaseRepository):
+class UserRepository(BaseRepository[models.User, None, None]):
     async def get_by_email(self, db: AsyncSession, *, email: str):
         """Get user by email."""
         return await self.get_by_field(db=db, field_name='email', value=email, only_one=True)

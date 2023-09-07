@@ -6,18 +6,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
-from core import models
+from core import models, schemas
 from core.repositories.base import BaseRepository
 
 
-class ContentRepository(BaseRepository):
+class ContentRepository(BaseRepository[models.Post, schemas.CreatePost, schemas.UpdatePost]):
     async def get_posts(
         self,
         db: AsyncSession,
         *,
         skip: int = 0,
         limit: int = 100,
-        user: models.User = None,
+        user: Optional[models.User] = None,
     ) -> List[models.Post]:
         """Get all posts with current user like status."""
         if user is not None:

@@ -31,7 +31,7 @@ async def create_post(
     current_user: models.User = Depends(depends.get_current_user),
 ) -> schemas.Post:
     """Endpoint to create a post."""
-    created_post: models.Post = await services.content_service.create_post(db=db, data=data, user=current_user)
+    created_post: schemas.Post = await services.content_service.create_post(db=db, data=data, user=current_user)
     return created_post
 
 

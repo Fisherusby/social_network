@@ -37,7 +37,7 @@ class ContentService(BaseObjectService):
         post: models.Post = await self.get_and_check_post_by_id(db=db, post_id=post_id, user_id=user_id)
         return schemas.PostWithInfo(
             **post.dict(),
-            user=await repositories.user.get_by_id(db=db, id=post.user_id),
+            user=await repositories.user.get_by_id(db=db, obj_id=post.user_id),
             like_count=await self._get_cache_post_like(db=db, post_id=post.id),
         )
 
@@ -46,15 +46,15 @@ class ContentService(BaseObjectService):
         db: AsyncSession,
         *,
         post_id: UUID,
-        user_id: UUID = None,
-        owner: bool = None,
+        user_id: Optional[UUID] = None,
+        owner: Optional[bool] = None,
         rise_not_exist: bool = True,
-    ) -> Optional[models.Post]:
+    ) -> models.Post:
         """Get post with current user like status.
 
         Check user for this post's owner
         """
-        post = await self.repository.get_by_id(db=db, id=post_id)
+        post = await self.repository.get_by_id(db=db, obj_id=post_id)
 
         if post is None and rise_not_exist:
             raise HTTPException(status_code=404, detail=f"Post not found")
@@ -80,7 +80,7 @@ class ContentService(BaseObjectService):
         post: models.Post = await self.get_and_check_post_by_id(
             db=db, post_id=post_id, user_id=current_user.id, owner=True
         )
-        await self.repository.delete_by_id(db=db, id=post.id)
+        await self.repository.delete_by_id(db=db, obj_id=post.id)
 
     async def update_post(
         self, db: AsyncSession, post_id: UUID, data: schemas.UpdatePost, current_user: models.User
